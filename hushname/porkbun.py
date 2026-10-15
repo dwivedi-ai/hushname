@@ -15,6 +15,7 @@ import os
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 from . import registry
 
@@ -24,9 +25,27 @@ BATCH_PAUSE = 8.0     # 25 domains / 8 s stays under the 200-per-60 s budget
 
 
 def credentials() -> tuple[str, str] | None:
-    key = os.environ.get("PORKBUN_API_KEY")
-    secret = os.environ.get("PORKBUN_SECRET_KEY")
+    """Keys from the environment, falling back to a .env file in the cwd."""
+    env = {**_read_dotenv(Path(".env")), **os.environ}
+    key = env.get("PORKBUN_API_KEY")
+    secret = env.get("PORKBUN_SECRET_KEY")
     return (key, secret) if key and secret else None
+
+
+def _read_dotenv(path: Path) -> dict[str, str]:
+    """Minimal KEY=VALUE parser; ignores comments, blank lines and 'export '."""
+    try:
+        lines = path.read_text().splitlines()
+    except OSError:
+        return {}
+    out = {}
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.removeprefix("export ").split("=", 1)
+        out[k.strip()] = v.strip().strip("'\"")
+    return out
 
 
 def interpret(info: dict) -> dict:

@@ -36,18 +36,31 @@ Each name goes through up to three checks, stopping early once one gives a defin
 
 ## Turning on registrar verification (recommended)
 
-1. Create a free Porkbun account and API key at <https://porkbun.com/account/api>. The key only needs the **read** permission.
-2. Export the keys. Never commit them; `.env` is already in `.gitignore`.
-   ```bash
-   export PORKBUN_API_KEY=pk1_...
-   export PORKBUN_SECRET_KEY=sk1_...
-   ```
-3. Scans now verify `unregistered` names automatically. To verify an older run, use:
-   ```bash
-   python3 -m hushname verify results/2026-10-15_142415_full-scan
-   ```
+Registries hide their reserved and premium lists, so only a registrar can confirm that a name can really be bought, and at what price. hushname can check through **Porkbun's** free API.
 
-The tool only calls the availability endpoint, sends up to 25 names per request, and paces itself well under Porkbun's limits. It never registers or pays for anything.
+1. Log in to Porkbun (or create a free account), open **Account → API Access** (<https://porkbun.com/account/api>), and create an API key. It only needs the **read** permission.
+2. Give hushname the keys, in one of two ways:
+   - **A `.env` file** in the folder you run hushname from. It's already git-ignored, so it won't be committed:
+     ```
+     PORKBUN_API_KEY=pk1_...
+     PORKBUN_SECRET_KEY=sk1_...
+     ```
+   - **Environment variables** for the current terminal session:
+     ```bash
+     export PORKBUN_API_KEY=pk1_...
+     export PORKBUN_SECRET_KEY=sk1_...
+     ```
+3. Run a scan as usual. Names that come back `unregistered` are now confirmed automatically, and their status changes to `available`, `premium` or `unavailable`, with Porkbun's real prices. To confirm an older run without rescanning:
+   ```bash
+   python3 -m hushname verify results/<run-folder>
+   ```
+   Use `--no-verify` on `scan` to skip the Porkbun step for one run.
+
+**Good to know**
+- **It's read-only.** hushname only calls the availability check (`/domain/checkDomain`), which can't buy anything.
+- **It's a privacy trade-off.** Porkbun sees the names you verify. Only names the registries didn't find are sent, never your whole word list. If you'd rather not share them, leave the keys unset; you'll get `unregistered` (unconfirmed) results instead.
+- **Watch Porkbun's limits.** hushname sends 25 names per request and stays under the 200-names-per-minute budget. Porkbun also treats an account that checks about **1,800 names in 3 hours** while buying almost nothing as a bulk scanner, and limits it to 50 names per 5 minutes for the next 24 hours. Verifying one big scan is fine; verifying several back to back may trigger the limit. If that happens, hushname waits and retries.
+- **The key is only as safe as you keep it.** If a key leaks, delete it on the same Porkbun page and create a new one.
 
 ## Commands
 

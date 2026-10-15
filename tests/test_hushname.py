@@ -1,6 +1,7 @@
 """Offline tests - no network. Run: python3 -m unittest discover tests"""
 import io
 import json
+import os
 import tempfile
 import unittest
 import urllib.error
@@ -89,6 +90,30 @@ class Porkbun(unittest.TestCase):
             self.assertEqual(cli.apply_verification(rows, 30), "porkbun")
         self.assertEqual(rows[0]["status"], registry.UNAVAILABLE)
         self.assertEqual((rows[1]["status"], rows[1]["in_budget"]), (registry.PREMIUM, "no"))
+
+    def test_credentials_from_dotenv(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / ".env").write_text(
+                "# keys\nexport PORKBUN_API_KEY='pk1_a'\nPORKBUN_SECRET_KEY=\"sk1_b\"\n")
+            cwd = os.getcwd()
+            os.chdir(d)
+            try:
+                with mock.patch.dict("os.environ", {}, clear=True):
+                    self.assertEqual(porkbun.credentials(), ("pk1_a", "sk1_b"))
+            finally:
+                os.chdir(cwd)
+
+    def test_env_vars_override_dotenv(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / ".env").write_text("PORKBUN_API_KEY=file\nPORKBUN_SECRET_KEY=file\n")
+            cwd = os.getcwd()
+            os.chdir(d)
+            try:
+                with mock.patch.dict("os.environ", {"PORKBUN_API_KEY": "env",
+                                                    "PORKBUN_SECRET_KEY": "env"}):
+                    self.assertEqual(porkbun.credentials(), ("env", "env"))
+            finally:
+                os.chdir(cwd)
 
     def test_no_keys_means_off(self):
         with mock.patch.object(porkbun, "credentials", return_value=None):
