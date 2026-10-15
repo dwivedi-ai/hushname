@@ -1,0 +1,4 @@
+# First half of generated compounds: trending keywords.
+# Use with: hushname generate wordlists/heads.txt wordlists/tails.txt -o wordlists/compounds.txt
+agent agents eval evals infer vector prompt token swarm robot humanoid quantum
+fusion gpu compute neuro bio genome voice vision memory context mcp tensor edge model

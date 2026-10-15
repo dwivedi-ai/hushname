@@ -1,0 +1,62 @@
+# Typical yearly prices (USD) at budget registrars such as Porkbun, Dynadot
+# and Namecheap. Used only for the "in budget" estimate. When registrar
+# verification is on, the real quoted price replaces these numbers.
+#
+# Renewal is what matters for a portfolio: a $3 first year that renews at
+# $55 is not cheap. min_years is the shortest term the registry sells.
+#
+# Last reviewed: 2026-10. PRs updating prices are welcome.
+
+[com]
+reg = 11
+renew = 15
+min_years = 1
+weight = 15   # scoring bonus: resale value of the extension
+
+[net]
+reg = 12
+renew = 16
+min_years = 1
+weight = 2
+
+[si]
+reg = 13
+renew = 15
+min_years = 1
+weight = 0
+
+[app]
+reg = 13
+renew = 16
+min_years = 1
+weight = 3
+
+[dev]
+reg = 13
+renew = 16
+min_years = 1
+weight = 3
+
+[xyz]
+reg = 3
+renew = 15
+min_years = 1
+weight = -5
+
+[tech]
+reg = 8
+renew = 55
+min_years = 1
+weight = 0
+
+[build]
+reg = 30
+renew = 60
+min_years = 1
+weight = 0
+
+[ai]
+reg = 80
+renew = 115
+min_years = 2
+weight = 12

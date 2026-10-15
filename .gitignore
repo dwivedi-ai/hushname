@@ -1,0 +1,15 @@
+# scan output - personal, and goes stale within days
+results/
+
+# credentials
+.env
+.env.*
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
